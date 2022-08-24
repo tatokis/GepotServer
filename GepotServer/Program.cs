@@ -14,7 +14,7 @@ namespace GepotServer
         private static Mutex playerListMutex = new Mutex();
 
         // Set to false to disable chat
-        private static readonly bool chatEnabled = true;
+        private static bool chatEnabled = true;
 
         private static void sendNewPlayerMsg(ref Player p)
         {
@@ -303,8 +303,17 @@ namespace GepotServer
 
         public static void Main(string[] args)
         {
-            // Start the server
             int port = 6890;
+            // Quick and dirty arg parsing
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] == "--nochat")
+                    chatEnabled = false;
+                else if (args[i] == "--port" && i + 1 < args.Length)
+                    port = int.Parse(args[++i]);
+            }
+
+            // Start the server
             TcpListener l = new TcpListener(System.Net.IPAddress.Any, port);
             l.Start();
             Console.WriteLine("Server Started");
